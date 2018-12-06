@@ -21,7 +21,7 @@ class Pendulum:
             self.t = 0.01  # end time
             self.x_der = self.x0_der
             self.fi_der = self.fi0_der
-      # Then come all sorts of calculations, Lagrangians, Runge Kutta...
+      # Then all sorts of calculations, Lagrangians, Runge Kutta come
         def a_der(self, x, fi, fi_der):
              numerator = self.m_2 * self.l * sin(fi) * fi_der** 2 + self.k * x + self.m_2 * 9.81 * sin(fi) * cos(fi)
              denominator = self.m_2 * (cos(fi)) ** 2 - self.m_1 - self.m_2
@@ -60,7 +60,7 @@ class Pendulum:
             self.res_fi = fi
             self.x_der = x_der
             self.fi_der = fi_der
-      # Here is the replacement of the initial conditions with the pendulum coordinates just received
+      # Here is the replacement of the initial conditions with the just received pendulum coordinates
         def up_date(self):
             self.x0_der = self.x_der
             self.fi0 = self.res_fi
