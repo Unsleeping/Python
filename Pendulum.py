@@ -7,21 +7,21 @@ from PyQt5.QtGui import QPainter, QColor, QFont, QIcon
 from PyQt5.QtCore import QCoreApplication
 class Pendulum:
         def __init__(self):
-            self.k = 20  # spring stiffness, N/m
-            self.m_1 = 1  # spring load mass, kg
-            self.m_2 = 1  # weight of the load on the rod, kg
-            self.l = 1  # rod length, m
-            self.fi0 = radians(-50)  # the initial angle of deflection of the rod from the vertical, measured clockwise
-            self.x0 = 0  # initial x-coordinate of the spring pendulum
-            self.fi0_der = radians(0)  # der -- it's derivative
-            self.x0_der = 0  #
-            self.dt = 0.001  # time between iterations
-            self.res_x = self.x0  # current x-coordinate of the spring pendulum
-            self.res_fi = self.fi0  # rod deflection angle
-            self.t = 0.01  # end time
+            self.k = 20  # Spring stiffness, N/m
+            self.m_1 = 1  # Spring load mass, kg
+            self.m_2 = 1  # Weight of the load to the rod, kg
+            self.l = 1  # Rod length, m
+            self.fi0 = radians(-50)  # The initial angle of deflection of the rod from the vertical, measured clockwise
+            self.x0 = 0  # Initial x-coordinate of the spring pendulum
+            self.fi0_der = radians(0)  # The following 'der' is derivative
+            self.x0_der = 0
+            self.dt = 0.001  # Time between iterations
+            self.res_x = self.x0  # Current x-coordinate of the spring pendulum
+            self.res_fi = self.fi0  # Rod deflection angle
+            self.t = 0.01  # End time
             self.x_der = self.x0_der
             self.fi_der = self.fi0_der
-      # Then all sorts of calculations, Lagrangians, Runge Kutta come
+      # Further there're all sorts of calculations, Lagrangians, Runge Kutta
         def a_der(self, x, fi, fi_der):
              numerator = self.m_2 * self.l * sin(fi) * fi_der** 2 + self.k * x + self.m_2 * 9.81 * sin(fi) * cos(fi)
              denominator = self.m_2 * (cos(fi)) ** 2 - self.m_1 - self.m_2
@@ -60,14 +60,14 @@ class Pendulum:
             self.res_fi = fi
             self.x_der = x_der
             self.fi_der = fi_der
-      # Here is the replacement of the initial conditions with the just received pendulum coordinates
+      # The replacement of the initial conditions with received pendulum coordinates
         def up_date(self):
             self.x0_der = self.x_der
             self.fi0 = self.res_fi
             self.fi0_der = self.fi_der
             self.x0_der = self.x_der
 class AnimationExample(QMainWindow):
-    # constructor, create the GUI
+    # Constructor, create the GUI
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         self.resize(700, 350)
@@ -126,7 +126,7 @@ class AnimationExample(QMainWindow):
         self.timer.setInterval(10)  # it influences on the speed, but idk how it works
         self.timer.timeout.connect(self.onTimer)
 
-        self.A = Pendulum()  # create pendulum
+        self.A = Pendulum()  # Creation of pendulum
         self.x1 = 0
         self.x2 = 0
         self.y2 = 0
@@ -139,7 +139,7 @@ class AnimationExample(QMainWindow):
         #    ev.ignore()
 
     def paintEvent(self, ev):
-        # draw the current moment of the system
+        # Draw the current moment of the system
         qp = QPainter()
         qp.begin(self)
         qpp = QPainter()
@@ -147,12 +147,12 @@ class AnimationExample(QMainWindow):
         qpp.setPen(QColor(68,134,3))
         qpp.setFont(QFont('SansSerif', 150)) #(Decorative)
 
-        # draw points from its coordinates
+        # Draw points from its coordinates
         p0 = QtCore.QPointF(500, 80)
         p1 = QtCore.QPointF(500 - self.x1, 80)
         p2 = QtCore.QPointF(500 - self.x2, 80 + self.y2)
 
-        # draw lines through that points
+        # Draw lines through that points
         qp.drawLine(p0, p1)
         qpp.drawLine(p1, p2)
         qpp.drawLine(p1, p2)
@@ -161,15 +161,15 @@ class AnimationExample(QMainWindow):
         qpp.end()
 
     def onTimer(self):
-        x = self.A.res_x  # the x-coordinate of the sting pendulum
-        fi = self.A.res_fi  # the angle of deflection of the rod from the vertical
-        self.x1 = 500.0 * x  # calibration x from meters to pixels
-        self.x2 = self.x1 - 500.0 * self.A.l * sin(fi)  # calculate the x-coordinate of the rod pendulum
-        self.y2 = 500.0 * self.A.l * cos(fi)  # calculate the y-coordinate of the rod pendulum
-        self.A.result()  # calculate the current position of the Pendulum
-        self.A.up_date()  # update the initial conditions
+        x = self.A.res_x  # The x-coordinate of the sting pendulum
+        fi = self.A.res_fi  # The angle of deflection of the rod from the vertical
+        self.x1 = 500.0 * x  # Calibration x from meters into pixels
+        self.x2 = self.x1 - 500.0 * self.A.l * sin(fi)  # Calculation of rod pendulum's x-coordinate
+        self.y2 = 500.0 * self.A.l * cos(fi)  # Calculation of rod pendulum's y-coordinate
+        self.A.result()  # Calculation of the current position of the pendulum
+        self.A.up_date()  # The update of the initial conditions
 
-        # redraw the window
+        # The redrawing of the window
         self.update()
 
     def onStart(self):
@@ -193,13 +193,13 @@ class AnimationExample(QMainWindow):
         l = float(str(l_str))
         self.A.l = l
 
-        x = self.A.res_x  # the x-coordinate of the sting pendulum
-        fi = self.A.res_fi  # the angle of deflection of the rod from the vertical
-        self.x1 = 500.0 * x  # calibration x from meters to pixels
-        self.x2 = self.x1 - 500.0 * sin(fi)  # calculate the x-coordinate of the rod pendulum
-        self.y2 = 500.0 * cos(fi)  # calculate the y-coordinate of the rod pendulum
+        x = self.A.res_x  # The x-coordinate of the sting pendulum
+        fi = self.A.res_fi  # The angle of deflection of the rod from the vertical
+        self.x1 = 500.0 * x  # Calibration x from meters to pixels
+        self.x2 = self.x1 - 500.0 * sin(fi)  # Calculation of rod pendulum's x-coordinate
+        self.y2 = 500.0 * cos(fi)  # Calculation of rod pendulum's y-coordinate
 
-        self.timer.start()  # start
+        self.timer.start()  # Start
 
     def onStop(self):
         self.timer.stop()
