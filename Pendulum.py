@@ -1,7 +1,7 @@
 from math import (sin, cos, radians, ceil)
 import sys
 import qdarkstyle
-from PyQt5.QtWidgets import   QMainWindow, QApplication, QToolTip, QMessageBox
+from PyQt5.QtWidgets import   QMainWindow, QApplication, QToolTip, #QMessageBox
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPainter, QColor, QFont, QIcon
 from PyQt5.QtCore import QCoreApplication
