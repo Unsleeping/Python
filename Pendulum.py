@@ -1,10 +1,10 @@
 from math import (sin, cos, radians, ceil)
 import sys
 import qdarkstyle
-from PyQt5.QtWidgets import   QMainWindow, QApplication, QToolTip, #QMessageBox
+from PyQt5.QtWidgets import   QMainWindow, QApplication, QToolTip, QMessageBox, QProgressBar
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPainter, QColor, QFont, QIcon
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication, QBasicTimer
 class Pendulum:
         def __init__(self):
             self.k = 20  # Spring stiffness, N/m
@@ -73,6 +73,9 @@ class AnimationExample(QMainWindow):
         self.resize(700, 350)
         self.setWindowTitle('Sting Pendulum')
         
+        # ProgressBar
+        self.pbar = QProgressBar(self)
+        self.pbar.setGeometry(70, 250, 200, 25)
 
         # Weight_1 (on the sting)
         self.paramM1 = QtWidgets.QLineEdit("2", self)
@@ -106,6 +109,7 @@ class AnimationExample(QMainWindow):
         self.buttonStart.setToolTip('Press the <b>Button Start</b> to start process of drawing')
         self.buttonStart.resize(self.buttonStart.sizeHint())
         self.buttonStart.move(20, 250)
+        self.buttonStart.clicked.connect(self.doAction)
         self.buttonStart.clicked.connect(self.onStart)
 
         # Button Stop
@@ -122,6 +126,10 @@ class AnimationExample(QMainWindow):
         #self.buttonQuit.move(80, 250)
         #self.buttonQuit.clicked.connect(QCoreApplication.instance().quit)
 
+        # LabelBar
+        self.labelBar = QtWidgets.QLabel("", self)
+        QtWidgets.QLabel.setFixedWidth(self.labelBar, 140)
+        self.labelBar.move(136, 280)
         self.timer = QtCore.QTimer(self)
         self.timer.setInterval(10)  # it influences on the speed, but idk how it works
         self.timer.timeout.connect(self.onTimer)
@@ -130,6 +138,17 @@ class AnimationExample(QMainWindow):
         self.x1 = 0
         self.x2 = 0
         self.y2 = 0
+        
+        self.timer2 = QBasicTimer()
+        self.step = 0
+        
+    def timerEvent(self, ev):
+        if self.step >= 100:
+            self.timer.stop()
+            self.labelBar.setText("Finished")
+            return
+        self.step = self.step + 1
+        self.pbar.setValue(self.step)
         
     #def closeEvent(self, ev):
         #reply = QMessageBox.question(self, 'Message', "Are you sure to quit?", QMessageBox.Yex| QMessageBox.No, QMessageBox.No)
@@ -203,6 +222,12 @@ class AnimationExample(QMainWindow):
 
     def onStop(self):
         self.timer.stop()
+        
+    def doAction(self):
+        if self.timer2.isActive():
+            self.timer2.stop()
+        else:
+            self.timer2.start(100, self)
 
 
 app = QApplication(sys.argv)
