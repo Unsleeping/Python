@@ -4,7 +4,7 @@ from math import sin, cos, radians, ceil
 from PyQt5.QtWidgets import   QMainWindow, QApplication, QToolTip, QMessageBox, QProgressBar
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPainter, QColor, QFont
-from PyQt5.QtCore import QCoreApplication, QBasicTimer
+from PyQt5.QtCore import QBasicTimer
 class Pendulum:
         def __init__(self):
             self.k = 20  # Spring stiffness, N/m
@@ -74,6 +74,7 @@ class Pendulum:
 class AnimationExample(QMainWindow): 
     # Constructor, create the GUI
     def __init__(self):
+        #super().__init__()
         QtWidgets.QMainWindow.__init__(self)
         self.resize(900, 350)
         self.setWindowTitle('Sting Pendulum')
@@ -117,25 +118,14 @@ class AnimationExample(QMainWindow):
         self.buttonStart.clicked.connect(self.doAction)
         self.buttonStart.clicked.connect(self.onStart)
 
-        # Button Stop
-        #self.buttonStop = QtWidgets.QPushButton("Stop", self)
-        #self.buttonStop.setToolTip('Press the <b>Button Stop</b> to end this process')
-        #self.buttonStop.resize(self.buttonStop.sizeHint())
-        #self.buttonStop.move(20, 280)
-        #self.buttonStop.clicked.connect(self.onStop)
-        
-        # Button Quit
-        #self.buttonQuit = QtWidgets.QPushButton("Quit", self)
-        #self.buttonQuit.setToolTip('Press the <b>Button Quit</b> to close the window')
-        #self.buttonQuit.resize(self.buttonStop.sizeHint())
-        #self.buttonQuit.move(80, 250)
-        #self.buttonQuit.clicked.connect(QCoreApplication.instance().quit)
-
         # LabelBar
         self.labelBar = QtWidgets.QLabel("", self)
         QtWidgets.QLabel.setFixedWidth(self.labelBar, 140)
         self.labelBar.move(136, 280)
         
+        #QMessageBox
+        self.msgBox = QtWidgets.QMessageBox()
+                
         # Timers
         self.timer = QtCore.QTimer(self)
         self.timer.setInterval(10)  # it influences on the speed, but idk how it works
@@ -157,12 +147,14 @@ class AnimationExample(QMainWindow):
         self.step = self.step + 1
         self.pbar.setValue(self.step)
         
-    #def closeEvent(self, ev):
-        #reply = QMessageBox.question(self, 'Message', "Are you sure to quit?", QMessageBox.Yex| QMessageBox.No, QMessageBox.No)
-        #if reply == QMessageBox.Yes:
-        #    ev.accept()
-        #else:
-        #    ev.ignore()
+    def closeEvent(self, ev):
+        
+        reply = self.msgBox.question(self, 'Confirm action', "Are you sure to quit?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+            ev.accept()
+        else:
+            ev.ignore()
 
     def paintEvent(self, ev):
         # Draw the current moment of the system
