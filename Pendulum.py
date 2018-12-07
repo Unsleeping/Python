@@ -1,9 +1,9 @@
-from math import (sin, cos, radians, ceil)
 import sys
 import qdarkstyle
+from math import sin, cos, radians, ceil
 from PyQt5.QtWidgets import   QMainWindow, QApplication, QToolTip, QMessageBox, QProgressBar
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtGui import QPainter, QColor, QFont, QIcon
+from PyQt5.QtGui import QPainter, QColor, QFont
 from PyQt5.QtCore import QCoreApplication, QBasicTimer
 class Pendulum:
         def __init__(self):
@@ -21,15 +21,18 @@ class Pendulum:
             self.t = 0.01  # End time
             self.x_der = self.x0_der
             self.fi_der = self.fi0_der
-      # Further there're all sorts of calculations, Lagrangians, Runge Kutta
+            
+        # Further there're all sorts of calculations, Lagrangians, Runge Kutta
         def a_der(self, x, fi, fi_der):
              numerator = self.m_2 * self.l * sin(fi) * fi_der** 2 + self.k * x + self.m_2 * 9.81 * sin(fi) * cos(fi)
              denominator = self.m_2 * (cos(fi)) ** 2 - self.m_1 - self.m_2
              return numerator/denominator
+         
         def b_der(self, x, fi, fi_der):
              numerator = 9.81 * sin(fi) + cos(fi) * (self.m_2 * self.l * fi_der ** 2 * sin(fi) + self.k * x) / (self.m_1 + self.m_2)
              denominator = -1 * self.l + self.m_2 * self.l * (cos(fi)) ** 2 / (self.m_1 + self.m_2)
              return numerator / denominator
+         
         def result(self):
             fi = self.fi0
             x = self.x0
@@ -60,48 +63,50 @@ class Pendulum:
             self.res_fi = fi
             self.x_der = x_der
             self.fi_der = fi_der
-      # The replacement of the initial conditions with received pendulum coordinates
+            
+        # The replacement of the initial conditions with received pendulum coordinates
         def up_date(self):
             self.x0_der = self.x_der
             self.fi0 = self.res_fi
             self.fi0_der = self.fi_der
             self.x0_der = self.x_der
-class AnimationExample(QMainWindow):
+            
+class AnimationExample(QMainWindow): 
     # Constructor, create the GUI
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
-        self.resize(700, 350)
+        self.resize(900, 350)
         self.setWindowTitle('Sting Pendulum')
         
-        # ProgressBar
+        # StatusBar
         self.pbar = QProgressBar(self)
         self.pbar.setGeometry(70, 250, 200, 25)
 
         # Weight_1 (on the sting)
         self.paramM1 = QtWidgets.QLineEdit("2", self)
-        self.paramM1.move(170, 30)
+        self.paramM1.move(190, 30)
         self.labelM1 = QtWidgets.QLabel("Weight_1, kg:", self)
-        self.labelM1.move(20, 30)
+        self.labelM1.move(10, 30)
 
         # Weitght_2 (on the rod)
         self.paramM2 = QtWidgets.QLineEdit("15", self)
-        self.paramM2.move(170, 80)
+        self.paramM2.move(190, 80)
         self.labelM2 = QtWidgets.QLabel("Weight_2, kg:", self)
-        self.labelM2.move(20, 80)
+        self.labelM2.move(10, 80)
 
-        # Sting Stiffness
+        # Spring Stiffness
         self.paramk = QtWidgets.QLineEdit("20", self)
-        self.paramk.move(170, 130)
-        self.labelk = QtWidgets.QLabel("Sting Stiffness, N/m:", self)
-        QtWidgets.QLabel.setFixedWidth(self.labelk, 150)
-        self.labelk.move(20, 130)
+        self.paramk.move(190, 130)
+        self.labelk = QtWidgets.QLabel("Spring Stiffness, N/m:", self)
+        QtWidgets.QLabel.setFixedWidth(self.labelk, 160)
+        self.labelk.move(10, 130)
 
         # Rod length
         self.paraml = QtWidgets.QLineEdit("0.5", self)
-        self.paraml.move(170, 180)
+        self.paraml.move(190, 180)
         self.labell = QtWidgets.QLabel("Rod length, m:", self)
         QtWidgets.QLabel.setFixedWidth(self.labell, 150)
-        self.labell.move(20, 180)
+        self.labell.move(10, 180)
 
         # Button Start
         QToolTip.setFont(QFont('SansSerif',10))
@@ -113,11 +118,11 @@ class AnimationExample(QMainWindow):
         self.buttonStart.clicked.connect(self.onStart)
 
         # Button Stop
-        self.buttonStop = QtWidgets.QPushButton("Stop", self)
-        self.buttonStop.setToolTip('Press the <b>Button Stop</b> to end this process')
-        self.buttonStop.resize(self.buttonStop.sizeHint())
-        self.buttonStop.move(20, 280)
-        self.buttonStop.clicked.connect(self.onStop)
+        #self.buttonStop = QtWidgets.QPushButton("Stop", self)
+        #self.buttonStop.setToolTip('Press the <b>Button Stop</b> to end this process')
+        #self.buttonStop.resize(self.buttonStop.sizeHint())
+        #self.buttonStop.move(20, 280)
+        #self.buttonStop.clicked.connect(self.onStop)
         
         # Button Quit
         #self.buttonQuit = QtWidgets.QPushButton("Quit", self)
@@ -130,17 +135,19 @@ class AnimationExample(QMainWindow):
         self.labelBar = QtWidgets.QLabel("", self)
         QtWidgets.QLabel.setFixedWidth(self.labelBar, 140)
         self.labelBar.move(136, 280)
+        
+        # Timers
         self.timer = QtCore.QTimer(self)
         self.timer.setInterval(10)  # it influences on the speed, but idk how it works
         self.timer.timeout.connect(self.onTimer)
-
-        self.A = Pendulum()  # Creation of pendulum
+        self.timer2 = QBasicTimer()
+        self.step = 0  
+        
+        # Creation of pendulum
+        self.A = Pendulum()  
         self.x1 = 0
         self.x2 = 0
-        self.y2 = 0
-        
-        self.timer2 = QBasicTimer()
-        self.step = 0
+        self.y2 = 0     
         
     def timerEvent(self, ev):
         if self.step >= 100:
@@ -164,12 +171,12 @@ class AnimationExample(QMainWindow):
         qpp = QPainter()
         qpp.begin(self)
         qpp.setPen(QColor(68,134,3))
-        qpp.setFont(QFont('SansSerif', 150)) #(Decorative)
+        qpp.setFont(QFont('SansSerif', 150)) 
 
         # Draw points from its coordinates
-        p0 = QtCore.QPointF(500, 80)
-        p1 = QtCore.QPointF(500 - self.x1, 80)
-        p2 = QtCore.QPointF(500 - self.x2, 80 + self.y2)
+        p0 = QtCore.QPointF(550, 40)
+        p1 = QtCore.QPointF(550 - self.x1, 40)
+        p2 = QtCore.QPointF(550 - self.x2, 40 + self.y2)
 
         # Draw lines through that points
         qp.drawLine(p0, p1)
@@ -218,21 +225,21 @@ class AnimationExample(QMainWindow):
         self.x2 = self.x1 - 500.0 * sin(fi)  # Calculation of rod pendulum's x-coordinate
         self.y2 = 500.0 * cos(fi)  # Calculation of rod pendulum's y-coordinate
 
-        self.timer.start()  # Start
-
-    def onStop(self):
-        self.timer.stop()
+        self.timer.start()  # Start, the following 'timer' is the timer of pendulum
         
     def doAction(self):
-        if self.timer2.isActive():
+        if self.step == 100:
+            self.step = self.step - 100
+            self.labelBar.setText("")
+            return
+        self.pbar.setValue(self.step)
+        if self.timer2.isActive(): # Tle following 'timer2' is the timer of StatusBar
             self.timer2.stop()
         else:
             self.timer2.start(100, self)
 
-
 app = QApplication(sys.argv)
 app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 widget = AnimationExample()
-#app.setWindowIcon(QIcon('web.png'))
 widget.show()
 sys.exit(app.exec_())
